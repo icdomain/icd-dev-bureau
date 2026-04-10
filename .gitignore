@@ -8,3 +8,6 @@ venv/
 .venv/
 dist/
 build/
+data/*.db
+.pytest_cache/
+*.egg-info/
