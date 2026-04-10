@@ -20,10 +20,11 @@ def _register_sources(sources: list[dict]) -> None:
         for src in sources:
             active = int(src.get("active", True))
             # 新規挿入
+            user_agent = src.get("user_agent") or None
             result = conn.execute(
                 """INSERT OR IGNORE INTO sources
-                   (name, display_name, category, url, fetcher_type, active)
-                   VALUES (?, ?, ?, ?, ?, ?)""",
+                   (name, display_name, category, url, fetcher_type, active, user_agent)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 (
                     src["name"],
                     src["display_name"],
@@ -31,20 +32,27 @@ def _register_sources(sources: list[dict]) -> None:
                     src["url"],
                     src["fetcher_type"],
                     active,
+                    user_agent,
                 ),
             )
             if result.rowcount:
                 inserted += 1
                 logger.debug(f"  registered: {src['name']}")
             else:
-                # 既存レコードは active フラグのみ同期する
+                # 既存レコードは url / active / user_agent を同期する
                 upd = conn.execute(
-                    "UPDATE sources SET active = ? WHERE name = ? AND active != ?",
-                    (active, src["name"], active),
+                    """UPDATE sources SET url = ?, active = ?, user_agent = ?
+                       WHERE name = ?
+                         AND (url != ? OR active != ?
+                              OR COALESCE(user_agent,'') != COALESCE(?,''))""",
+                    (
+                        src["url"], active, user_agent, src["name"],
+                        src["url"], active, user_agent,
+                    ),
                 )
                 if upd.rowcount:
                     updated += 1
-                    logger.debug(f"  updated active={active}: {src['name']}")
+                    logger.debug(f"  synced: {src['name']}")
 
     logger.info(f"Sources: {inserted} inserted, {updated} active-flag updated")
 

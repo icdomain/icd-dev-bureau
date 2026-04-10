@@ -10,9 +10,10 @@ sources:
   - name: anthropic_news
     display_name: Anthropic News
     category: vendor
-    url: https://www.anthropic.com/rss.xml   # 公式RSS未提供。要確認。
+    # 公式RSSなし。コミュニティ製フィード (GitHub Actions で毎時更新) を使用。
+    url: https://raw.githubusercontent.com/taobojlen/anthropic-rss-feed/main/anthropic_news_rss.xml
     fetcher_type: rss
-    active: false
+    active: true
 
   - name: deepmind_blog
     display_name: Google DeepMind Blog
@@ -67,9 +68,11 @@ sources:
   - name: zvi_mowshowitz
     display_name: "Don't Worry About the Vase (Zvi)"
     category: independent
-    url: https://thezvi.substack.com/feed   # Substack 403。要確認。
+    # Substack (thezvi.substack.com/feed) はTLSフィンガープリントでPython HTTPクライアントを403拒否。
+    # WordPress ミラーは httpx でそのまま取得可能。
+    url: https://thezvi.wordpress.com/feed/
     fetcher_type: rss
-    active: false
+    active: true
 
   # ── プラットフォーム / データベース ──────────────────────────────────────────
   - name: hf_trending_models

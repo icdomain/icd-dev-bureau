@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS sources (
     url              TEXT NOT NULL,
     fetcher_type     TEXT NOT NULL,
     active           INTEGER NOT NULL DEFAULT 1,
+    user_agent       TEXT,
     last_fetched_at  TIMESTAMP,
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

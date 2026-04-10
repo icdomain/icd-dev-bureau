@@ -33,9 +33,10 @@ def _parse_date(entry: dict) -> str | None:
 
 class RssFetcher(BaseFetcher):
     def fetch(self) -> list[FetchedItem]:
+        ua = self.source.get("user_agent") or USER_AGENT
         resp = httpx.get(
             self.source["url"],
-            headers={"User-Agent": USER_AGENT},
+            headers={"User-Agent": ua},
             timeout=TIMEOUT,
             follow_redirects=True,
         )
